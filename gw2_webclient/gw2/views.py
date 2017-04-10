@@ -11,6 +11,7 @@ from django.template import RequestContext
 from models import Bank, Inventory
 
 
+<<<<<<< HEAD
 
 def homepage(request):
     context = RequestContext(request)
@@ -40,6 +41,12 @@ def register(request):
             # Once hashed, we can update the user object.
             user.set_password(user.password)
             user.save()
+=======
+import requests
+import json
+import sys
+import os
+>>>>>>> 507f5b448d4fc5654b36f1049b33accf6b5f1906
 
             # Update our variable to tell the template registration was successful.
             registered = True
@@ -63,10 +70,13 @@ def register(request):
 
 
 
-'''class GwClient(object):
+class GwClient(object):
     URL = "https://api.guildwars2.com/v2/"
     url_services = {
-        "professions": "professions/"
+        "professions": "professions/",
+        "account": "account/",
+        "inventory": "inventory",
+        "character": "characters/"
     }
 
     def __init__(self, professionname, apikey):
@@ -92,8 +102,64 @@ def register(request):
         return_response["weapons"] = data["weapons"]
 
         return return_response
-'''
+<<<<<<< HEAD
+
 
 if __name__ == "__main__":
     api = None
     #client = GwClient("Mesmer", api)
+=======
+
+    @property
+    def getAchievements(self):
+        url = GwClient.URL  +  GwClient.url_services["achievements"]
+        yolo = []
+        req = requests.get(url)
+
+        return_response = {}
+        data = json.loads(req.text)
+        return_response["ids"] = data
+
+        for id in data[0:20]:
+            return_response_achievements = {}
+            url_id = GwClient.URL + GwClient.url_services["achievements"] + str(id)
+            #print id
+            req_achievements = requests.get(url_id)
+            data_achievements = json.loads(req_achievements.text)
+            return_response_achievements["name"] = {}
+            return_response_achievements["name"] = data_achievements["name"]
+
+
+            return_response_achievements["description"] = {}
+            return_response_achievements["description"] = data_achievements["description"]
+
+            return_response_achievements["requirement"] = {}
+            return_response_achievements["requirement"] = data_achievements["requirement"]
+
+            return_response_achievements["type"] = {}
+            return_response_achievements["type"] = data_achievements["type"]
+
+            yolo.append(return_response_achievements)
+
+
+        return yolo
+    def getInventory(self):
+        before_api = "?access_token="
+        url = GwClient.URL + GwClient.url_services["character"] + "Unvintuh Hamsahaha/" + GwClient.url_services["inventory"] + before_api + self.apikey
+        print url
+        req_inventory = requests.get(url)
+        data_inventory = json.loads(req_inventory.text)
+        print data_inventory
+
+        return_response_inventory = {}
+
+
+
+        return return_response_inventory
+
+
+if __name__ == "__main__":
+    api = sys.argv[1]
+    client = GwClient("Mesmer", api)
+    print client.getInventory()
+>>>>>>> 507f5b448d4fc5654b36f1049b33accf6b5f1906
