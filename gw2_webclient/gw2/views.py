@@ -1,10 +1,10 @@
-from django.contrib.auth.models import User
+#from django.contrib.auth.models import User
 from django.shortcuts import render
 import requests
 import json
 import sys
 
-from django.views.decorators.csrf import ensure_csrf_cookie, csrf_protect, csrf_exempt
+'''from django.views.decorators.csrf import ensure_csrf_cookie, csrf_protect, csrf_exempt
 from django.views.generic.edit import CreateView
 from django.shortcuts import render_to_response
 from forms import UserForm
@@ -63,7 +63,7 @@ def register(request):
             {'user_form': user_form, 'registered': registered},
             context)
 
-
+'''
 
 class GwClient(object):
     URL = "https://api.guildwars2.com/v2/"
@@ -71,7 +71,7 @@ class GwClient(object):
         "professions": "professions/",
         "account": "account/",
         "inventory": "inventory",
-        "character": "characters/"
+        "character": "characters/",
     }
 
     def __init__(self, professionname, apikey):
@@ -98,14 +98,9 @@ class GwClient(object):
 
         return return_response
 
-
-if __name__ == "__main__":
-    api = None
-    #client = GwClient("Mesmer", api)
-
     @property
     def getAchievements(self):
-        url = GwClient.URL  +  GwClient.url_services["achievements"]
+        url = GwClient.URL + GwClient.url_services["achievements"]
         yolo = []
         req = requests.get(url)
 
@@ -116,12 +111,11 @@ if __name__ == "__main__":
         for id in data[0:20]:
             return_response_achievements = {}
             url_id = GwClient.URL + GwClient.url_services["achievements"] + str(id)
-            #print id
+            # print id
             req_achievements = requests.get(url_id)
             data_achievements = json.loads(req_achievements.text)
             return_response_achievements["name"] = {}
             return_response_achievements["name"] = data_achievements["name"]
-
 
             return_response_achievements["description"] = {}
             return_response_achievements["description"] = data_achievements["description"]
@@ -134,19 +128,21 @@ if __name__ == "__main__":
 
             yolo.append(return_response_achievements)
 
-
         return yolo
+
     def getInventory(self):
         before_api = "?access_token="
-        url = GwClient.URL + GwClient.url_services["character"] + "Unvintuh Hamsahaha/" + GwClient.url_services["inventory"] + before_api + self.apikey
-        print url
+        url = GwClient.URL + GwClient.url_services["character"] + "Unvintuh Hamsahaha/" + GwClient.url_services[
+            "inventory"] + before_api + self.apikey
+        #print url
         req_inventory = requests.get(url)
         data_inventory = json.loads(req_inventory.text)
-        print data_inventory
+        return_response_inventory = []
 
-        return_response_inventory = {}
-
-
+        for bag in data_inventory["bags"]:
+            for item in bag["inventory"]:
+                if item:
+                    return_response_inventory.append((item["id"], item["count"]))
 
         return return_response_inventory
 
