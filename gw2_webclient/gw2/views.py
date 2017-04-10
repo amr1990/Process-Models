@@ -5,13 +5,16 @@ from django.shortcuts import render
 
 import requests
 import json
-
-
+import sys
+import os
 
 class GwClient(object):
     URL = "https://api.guildwars2.com/v2/"
     url_services = {
-        "professions": "professions/"
+        "professions": "professions/",
+        "account": "account/",
+        "inventory": "inventory",
+        "character": "characters/"
     }
 
     def __init__(self, professionname, apikey):
@@ -56,7 +59,7 @@ class GwClient(object):
             data_achievements = json.loads(req_achievements.text)
             return_response_achievements["name"] = {}
             return_response_achievements["name"] = data_achievements["name"]
-            #print return_response_achievements["name"]
+
 
             return_response_achievements["description"] = {}
             return_response_achievements["description"] = data_achievements["description"]
@@ -66,14 +69,27 @@ class GwClient(object):
 
             return_response_achievements["type"] = {}
             return_response_achievements["type"] = data_achievements["type"]
-            #print return_response_achievements
+
             yolo.append(return_response_achievements)
 
 
         return yolo
+    def getInventory(self):
+        before_api = "?access_token="
+        url = GwClient.URL + GwClient.url_services["character"] + "Unvintuh Hamsahaha/" + GwClient.url_services["inventory"] + before_api + self.apikey
+        print url
+        req_inventory = requests.get(url)
+        data_inventory = json.loads(req_inventory.text)
+        print data_inventory
+
+        return_response_inventory = {}
+
+
+
+        return return_response_inventory
 
 
 if __name__ == "__main__":
-    api = None
+    api = sys.argv[1]
     client = GwClient("Mesmer", api)
-    print client.getprofession
+    print client.getInventory()
