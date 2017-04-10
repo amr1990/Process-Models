@@ -2,6 +2,7 @@ from django.contrib.auth.models import User
 from django.shortcuts import render
 import requests
 import json
+import sys
 
 from django.views.decorators.csrf import ensure_csrf_cookie, csrf_protect, csrf_exempt
 from django.views.generic.edit import CreateView
@@ -11,7 +12,6 @@ from django.template import RequestContext
 from models import Bank, Inventory
 
 
-<<<<<<< HEAD
 
 def homepage(request):
     context = RequestContext(request)
@@ -41,12 +41,7 @@ def register(request):
             # Once hashed, we can update the user object.
             user.set_password(user.password)
             user.save()
-=======
-import requests
-import json
-import sys
-import os
->>>>>>> 507f5b448d4fc5654b36f1049b33accf6b5f1906
+
 
             # Update our variable to tell the template registration was successful.
             registered = True
@@ -102,13 +97,11 @@ class GwClient(object):
         return_response["weapons"] = data["weapons"]
 
         return return_response
-<<<<<<< HEAD
 
 
 if __name__ == "__main__":
     api = None
     #client = GwClient("Mesmer", api)
-=======
 
     @property
     def getAchievements(self):
@@ -162,4 +155,3 @@ if __name__ == "__main__":
     api = sys.argv[1]
     client = GwClient("Mesmer", api)
     print client.getInventory()
->>>>>>> 507f5b448d4fc5654b36f1049b33accf6b5f1906
