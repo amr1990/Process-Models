@@ -64,8 +64,13 @@ class Bank(models.Model):
     id = models.AutoField(primary_key=True)
     item = models.TextField()
 
+    def __unicode__(self):
+        return self.item
+
 class Inventory(models.Model):
     id = models.AutoField(primary_key=True)
     item = models.TextField()
 
+    def __unicode__(self):
+        return self.item
 
