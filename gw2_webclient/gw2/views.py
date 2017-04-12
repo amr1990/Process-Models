@@ -1,10 +1,13 @@
-#from django.contrib.auth.models import User
+from django.contrib.auth.decorators import login_required
+from django.contrib.auth.models import User
 from django.shortcuts import render
 import requests
 import json
 import sys
 
-'''from django.views.decorators.csrf import ensure_csrf_cookie, csrf_protect, csrf_exempt
+from models import Inventory, UserProfile
+
+from django.views.decorators.csrf import ensure_csrf_cookie, csrf_protect, csrf_exempt
 from django.views.generic.edit import CreateView
 from django.shortcuts import render_to_response
 from forms import UserForm
@@ -12,10 +15,18 @@ from django.template import RequestContext
 from models import Bank, Inventory
 
 
+URL = "https://api.guildwars2.com/v2/"
+url_services = {
+    "token": "?access_token=",
+    "professions": "professions/",
+    "account": "account/",
+    "inventory": "inventory",
+    "character": "characters/",
+    "items": "items/",
+    "achievements": "achievements",
+    "daily": "/daily",
+}
 
-def homepage(request):
-    context = RequestContext(request)
-    return render_to_response("base.html", context)
 
 @csrf_exempt
 def register(request):
@@ -63,91 +74,93 @@ def register(request):
             {'user_form': user_form, 'registered': registered},
             context)
 
-'''
-
-class GwClient(object):
-    URL = "https://api.guildwars2.com/v2/"
-    url_services = {
-        "professions": "professions/",
-        "account": "account/",
-        "inventory": "inventory",
-        "character": "characters/",
-    }
-
-    def __init__(self, professionname, apikey):
-        super(GwClient, self).__init__()
-        self.profession = professionname
-        self.apikey = apikey
 
 
-    @property
-    def getProfession(self):
-        url = GwClient.URL + GwClient.url_services["professions"] + self.profession
-        req = requests.get(url)
-
-        return_response = {}
-        data = json.loads(req.text)
-
-        return_response["name"] = {}
-        return_response["name"] = data["name"]
-        return_response["training"] = {}
-        return_response["training"] = data["training"]
-        return_response["training"] = data["training"]
-        return_response["weapons"] = {}
-        return_response["weapons"] = data["weapons"]
-
-        return return_response
-
-    @property
-    def getAchievements(self):
-        url = GwClient.URL + GwClient.url_services["achievements"]
-        yolo = []
-        req = requests.get(url)
-
-        return_response = {}
-        data = json.loads(req.text)
-        return_response["ids"] = data
-
-        for id in data[0:20]:
-            return_response_achievements = {}
-            url_id = GwClient.URL + GwClient.url_services["achievements"] + str(id)
-            # print id
-            req_achievements = requests.get(url_id)
-            data_achievements = json.loads(req_achievements.text)
-            return_response_achievements["name"] = {}
-            return_response_achievements["name"] = data_achievements["name"]
-
-            return_response_achievements["description"] = {}
-            return_response_achievements["description"] = data_achievements["description"]
-
-            return_response_achievements["requirement"] = {}
-            return_response_achievements["requirement"] = data_achievements["requirement"]
-
-            return_response_achievements["type"] = {}
-            return_response_achievements["type"] = data_achievements["type"]
-
-            yolo.append(return_response_achievements)
-
-        return yolo
-
-    def getInventory(self):
-        before_api = "?access_token="
-        url = GwClient.URL + GwClient.url_services["character"] + "Unvintuh Hamsahaha/" + GwClient.url_services[
-            "inventory"] + before_api + self.apikey
-        #print url
-        req_inventory = requests.get(url)
-        data_inventory = json.loads(req_inventory.text)
-        return_response_inventory = []
-
-        for bag in data_inventory["bags"]:
-            for item in bag["inventory"]:
-                if item:
-                    return_response_inventory.append((item["id"], item["count"]))
-
-        return return_response_inventory
+def homepage(request):
+    context = RequestContext(request)
+    return render_to_response("homepage.html", context)
 
 
-if __name__ == "__main__":
-    api = sys.argv[1]
-    client = GwClient("Mesmer", api)
-    print client.getInventory()
+@property
+def getProfession():
+    url = URL + url_services["professions"] + self.profession
+    req = requests.get(url)
+
+    return_response = {}
+    data = json.loads(req.text)
+
+    return_response["name"] = {}
+    return_response["name"] = data["name"]
+    return_response["training"] = {}
+    return_response["training"] = data["training"]
+    return_response["training"] = data["training"]
+    return_response["weapons"] = {}
+    return_response["weapons"] = data["weapons"]
+
+    return return_response
+
+
+def getInventory(DetailView, api):
+    model = Inventory
+    url = URL + url_services["character"] + "Unvintuh Hamsahaha/" + url_services[
+        "inventory"] + url_services["token"] + api
+    req_inventory = requests.get(url)
+    data_inventory = json.loads(req_inventory.text)
+    return_response_inventory = []
+
+    for bag in data_inventory["bags"]:
+        for item in bag["inventory"]:
+            if item:
+                url_items = URL + url_services["items"] + str(item["id"])
+                req_items = requests.get(url_items)
+                data_items = json.loads(req_items.text)
+                itemname = data_items["name"]
+                return_response_inventory.append((itemname, item["count"]))
+
+    model.setitem(return_response_inventory)
+
+    return return_response_inventory
+
+
+def getDailyAchievement(request):
+    context = RequestContext(request)
+    token = "?id="
+    URL_daily = URL + url_services["achievements"] + url_services["daily"]
+    req_daily = requests.get(URL_daily)
+    data_daily = json.loads(req_daily.text)
+    dailies = []
+    return_response = []
+    dailies.append(data_daily["pve"])
+    dailies.append(data_daily["pvp"])
+    dailies.append(data_daily["wvw"])
+    dailies.append(data_daily["fractals"])
+
+    for i in dailies:
+        for j in i:
+            URL_achi = URL + url_services["achievements"] + token + str(j["id"])
+            #print URL_achi
+            req_achi = requests.get(URL_achi)
+            data_achi = json.loads(req_achi.text)
+            return_response.append((data_achi["name"], data_achi["requirement"]))
+
+    return render_to_response(
+        'daily.html',
+        {'achievements': return_response},
+        context)
+
+@login_required
+def getCharacterList(request):
+    context = RequestContext(request)
+    if request.user.is_authenticated():
+        user = User.objects.get(id=request.user.id)
+        profile = UserProfile.objects.filter(user=user).get()
+        api = profile.apikey
+    URL_char = URL + url_services["character"] + url_services["token"] + str(api)
+    req_char = requests.get(URL_char)
+    data_char = json.loads(req_char.text)
+
+    return render_to_response(
+        'characters.html',
+        {'characters': data_char},
+        context)
+

@@ -1,6 +1,9 @@
 from __future__ import unicode_literals
 
+from django.contrib.auth.models import User
 from django.db import models
+
+import json
 
 
 # Create your models here.
@@ -23,54 +26,53 @@ class ProfessionSkill(Skill):
 class WeaponSkill(Skill):
 
 
+
+class TradingPost(models.Model):
+
+
+    
+class Game(models.Model):
+
+
 class Player(models.Model):
-    id = models.AutoField(primary_key=True)
     charid = models.ForeignKey(Character)
     bankid = models.ForeignKey(Bank)
     gameid = models.ForeignKey(Game)
     tpid = models.ForeignKey(TradingPost)
     achievementid = models.ForeignKey(Achievement)
 
-class Achievement(models.Model):
-    id = models.IntegerField(primary_key=True)
-
-    class Meta:
-        abstract = True
-
-class Daily(Achievement):
-
-
-    class Meta(Achievement.Meta):
-        db_table = 'daily_achievement'
-
-
-class General(Achievement):
-
-    class Meta(Achievement.Meta):
-        db_table = 'genera_achievement'
-
-
-class TradingPost(models.Model):
-
-class Character(models.Model):
-    name = models.TextField(primary_key=True)
-    
-class Game(models.Model):
 
 
 '''
+class Inventory(models.Model):
+    item = models.TextField(null=False)
+
+    def setitems(self, x):
+        self.item = json.dumps(x)
+
+    def __unicode__(self):
+        return self.item
+
+
+class Character(models.Model):
+    name = models.TextField()
+    race = models.TextField()
+    gender = models.TextField()
+    profession = models.TextField
+    level = models.IntegerField()
+    guild = models.TextField(blank=True)
+
+
+class UserProfile(models.Model):
+    user = models.OneToOneField(User)
+    apikey = models.CharField(max_length=100)
+
+    def __unicode__(self):
+        return self.user.username
+
 
 class Bank(models.Model):
-    id = models.AutoField(primary_key=True)
     item = models.TextField()
 
     def __unicode__(self):
         return self.item
-
-class Inventory(models.Model):
-    id = models.AutoField(primary_key=True)
-    item = models.TextField()
-
-    def __unicode__(self):
-        return self.item
-

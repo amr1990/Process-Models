@@ -27,7 +27,7 @@ DEBUG = True
 
 ALLOWED_HOSTS = []
 
-
+AUTH_PROFILE_MODULE = 'gw2.UserProfile'
 # Application definition
 
 INSTALLED_APPS = [

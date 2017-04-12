@@ -19,7 +19,9 @@ from django.contrib.auth.views import login, logout
 from gw2 import views
 
 urlpatterns = [
-    url(r'^$', views.homepage, name='base'),
+    url(r'^$', views.homepage, name='homepage'),
+    url(r'^dailies/$', views.getDailyAchievement, name='dailies'),
+    url(r'^characters/$', views.getCharacterList, name='characters'),
     url(r'^accounts/login/$', login, name='login'),
     url(r'^accounts/logout/$', logout, name='logout'),
     url(r'^registration/register/$', views.register, name='register'),

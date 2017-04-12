@@ -1,0 +1,9 @@
+{% extends "base.html" %}
+{% block content %}
+<h1>Daily Achievements</h1>
+    {% for name, description in achievements %}
+        <br><strong>Daily name</strong>: {{name}}</br>
+        <br><strong>Description</strong>: {{description}}</br>
+        <br></br>
+    {% endfor %}
+{% endblock %}
