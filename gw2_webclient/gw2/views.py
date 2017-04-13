@@ -23,6 +23,7 @@ url_services = {
     "items": "items/",
     "achievements": "achievements",
     "daily": "/daily",
+    "equipment": "/equipment/",
 }
 
 
@@ -190,3 +191,42 @@ def getCharacterInfo(request):
          'name': charname
         },
         context)
+
+@login_required
+def getGear(request):
+    context = RequestContext(request)
+    charname = request.GET.get('name')
+
+    if request.user.is_authenticated():
+        user = User.objects.get(id=request.user.id)
+        profile = UserProfile.objects.filter(user=user).get()
+        api = profile.apikey
+
+    url = URL + url_services["character"] + charname + url_services[
+        "equipment"] + url_services["token"] + api
+    req_gear = requests.get(url)
+    data_gear = json.loads(req_gear.text)
+    return_response_gear = []
+
+    for gear in data_gear["equipment"]:
+
+         if gear["id"]:
+                url_items = URL + url_services["items"] + str(gear["id"])
+                req_items = requests.get(url_items)
+                data_items = json.loads(req_items.text)
+                itemname = data_items["name"]
+                itemtype = data_items["type"]
+
+
+                return_response_gear.append((itemname,itemtype,data_items["details"]))
+
+
+         '''for item in gear:
+            if item:
+                url_items = URL + url_services["items"] + str(item["id"])
+                req_items = requests.get(url_items)
+                data_items = json.loads(req_items.text)
+                itemname = data_items["name"]
+                return_response_inventory.append((itemname, item["count"]))
+'''
+    return render_to_response('gear.html',{'gear':return_response_gear},context)

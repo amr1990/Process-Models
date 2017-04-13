@@ -1,0 +1,14 @@
+{% extends "base.html" %}
+{% block content %}
+<h1><strong>GEAR</strong></h1>
+
+    {% for name, id, details in gear %}
+        <br><strong>Item name</strong>: {{name}}</br>
+        <br><strong>Item ID</strong>: {{id}}</br>
+        <br><strong>Item details</strong>: {{details}}</br>
+        <br></br>
+    {% endfor %}
+
+
+
+{% endblock %}
