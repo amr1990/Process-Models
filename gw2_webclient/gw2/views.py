@@ -17,7 +17,7 @@ url_services = {
     "token": "?access_token=",
     "professions": "professions/",
     "account": "account/",
-    "inventory": "inventory",
+    "inventory": "/inventory/",
     "character": "characters/",
     "core": "/core/",
     "items": "items/",
@@ -98,9 +98,15 @@ def getProfession():
     return return_response
 
 
-def getInventory(DetailView, api):
-    model = Inventory
-    url = URL + url_services["character"] + "Unvintuh Hamsahaha/" + url_services[
+def getInventory(request):
+    context = RequestContext(request)
+    charname = request.GET.get('name')
+    if request.user.is_authenticated():
+        user = User.objects.get(id=request.user.id)
+        profile = UserProfile.objects.filter(user=user).get()
+        api = profile.apikey
+
+    url = URL + url_services["character"] + charname + url_services[
         "inventory"] + url_services["token"] + api
     req_inventory = requests.get(url)
     data_inventory = json.loads(req_inventory.text)
@@ -115,10 +121,7 @@ def getInventory(DetailView, api):
                 itemname = data_items["name"]
                 return_response_inventory.append((itemname, item["count"]))
 
-    model.setitem(return_response_inventory)
-
-    return return_response_inventory
-
+    return render_to_response('inventory.html',{'inventory': return_response_inventory, 'name':charname},context)
 
 def getDailyAchievement(request):
     context = RequestContext(request)

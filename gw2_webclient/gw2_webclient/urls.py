@@ -23,6 +23,7 @@ urlpatterns = [
     url(r'^dailies/$', views.getDailyAchievement, name='dailies'),
     url(r'^characters/$', views.getCharacterList, name='characters'),
     url(r'^characters/info/$', views.getCharacterInfo, name='characterinfo'),
+    url(r'^characters/inventory/$', views.getInventory, name='inventory'),
     url(r'^accounts/login/$', login, name='login'),
     url(r'^accounts/logout/$', logout, name='logout'),
     url(r'^registration/register/$', views.register, name='register'),
