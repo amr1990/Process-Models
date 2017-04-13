@@ -1,4 +1,5 @@
 <!DOCTYPE html>
+<meta charset="UTF-8">
 {% load staticfiles %}
 <html lang="en"> <head>
 <link rel="stylesheet" href="{% static "style/base.css" %}" />
@@ -19,4 +20,5 @@
 {% block sidebar %}<ul><li><a href="/">Home</a></li></ul>{% endblock %} </div>
 {% block content %}
 {% endblock %}
+<div id="footer">{% block footer %}{% endblock %}</div> </body>
 </html>

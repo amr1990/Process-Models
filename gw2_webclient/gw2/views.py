@@ -1,19 +1,16 @@
+# encoding=utf8
+import json
+
+import requests
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.models import User
-from django.shortcuts import render
-import requests
-import json
-import sys
-
-from models import Inventory, UserProfile
-
-from django.views.decorators.csrf import ensure_csrf_cookie, csrf_protect, csrf_exempt
-from django.views.generic.edit import CreateView
 from django.shortcuts import render_to_response
-from forms import UserForm
 from django.template import RequestContext
-from models import Bank, Inventory
+from django.views.decorators.csrf import csrf_exempt
 
+from forms import UserForm
+from models import Inventory
+from models import UserProfile
 
 URL = "https://api.guildwars2.com/v2/"
 url_services = {
@@ -22,6 +19,7 @@ url_services = {
     "account": "account/",
     "inventory": "inventory",
     "character": "characters/",
+    "core": "/core/",
     "items": "items/",
     "achievements": "achievements",
     "daily": "/daily",
@@ -155,7 +153,7 @@ def getCharacterList(request):
         user = User.objects.get(id=request.user.id)
         profile = UserProfile.objects.filter(user=user).get()
         api = profile.apikey
-    URL_char = URL + url_services["character"] + url_services["token"] + str(api)
+    URL_char = URL + url_services["character"] + url_services["token"] + api
     req_char = requests.get(URL_char)
     data_char = json.loads(req_char.text)
 
@@ -164,3 +162,28 @@ def getCharacterList(request):
         {'characters': data_char},
         context)
 
+
+@login_required
+def getCharacterInfo(request):
+    context = RequestContext(request)
+    charname = request.GET.get('name')
+    if request.user.is_authenticated():
+        user = User.objects.get(id=request.user.id)
+        profile = UserProfile.objects.filter(user=user).get()
+        api = profile.apikey
+    URL_charinfo = URL + url_services["character"] + charname + url_services["core"] + url_services["token"] + api
+    req_charinfo = requests.get(URL_charinfo)
+    data_charinfo = json.loads(req_charinfo.text)
+    info_params = data_charinfo.keys()
+    char_info = []
+    for item in info_params[2:]:
+        if data_charinfo[item]:
+            res = item + ": " + unicode(data_charinfo[item])
+            char_info.append(res)
+
+    return render_to_response(
+        'infochar.html',
+        {'charinfo': char_info,
+         'name': charname
+        },
+        context)
