@@ -1,6 +1,7 @@
 # encoding=utf8
 import json
-
+import bs4
+import urllib2
 import requests
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.models import User
@@ -24,6 +25,7 @@ url_services = {
     "achievements": "achievements",
     "daily": "/daily",
     "equipment": "/equipment/",
+    "bank": "bank/",
 }
 
 
@@ -230,3 +232,51 @@ def getGear(request):
                 return_response_inventory.append((itemname, item["count"]))
 '''
     return render_to_response('gear.html',{'gear':return_response_gear},context)
+
+
+@login_required
+def getBank(request):
+    context = RequestContext(request)
+    if request.user.is_authenticated():
+        user = User.objects.get(id=request.user.id)
+        profile = UserProfile.objects.filter(user=user).get()
+        api = profile.apikey
+
+    url = URL + url_services["account"] + url_services["bank"] + url_services["token"] + api
+    req_bank = requests.get(url)
+    data_bank = json.loads(req_bank.text)
+    return_response_bank = []
+
+    for item in data_bank:
+        if item:
+            url_items = URL + url_services["items"] + str(item["id"])
+            req_items = requests.get(url_items)
+            data_items = json.loads(req_items.text)
+            itemname = data_items["name"]
+            return_response_bank.append((itemname, item["count"]))
+
+    return render_to_response('bank.html',{'bank': return_response_bank},context)
+
+
+def getWorldBosses(request):
+    context = RequestContext(request)
+    url = urllib2.urlopen('https://wiki.guildwars2.com/wiki/World_boss')
+    htmlpage = url.read()
+    url.close()
+    itemClean = []
+    itemFinal = []
+    ignoreFirst = 0
+    bs = bs4.BeautifulSoup(htmlpage, "lxml")
+    caixa = bs.find("table", {"class": "mech1 mw-collapsible mw-collapsed table"})
+    item = caixa.findAll("tr")
+
+    for i in item:
+        if ignoreFirst == 0:
+            ignoreFirst += 1
+        else:
+            itemClean.append(i.text.encode("utf-8"))
+    for j in itemClean:
+        itemFinal.append([line for line in j.split('\n') if line.strip() != ''])
+
+    return render_to_response('events.html', {'events': itemFinal}, context)
+

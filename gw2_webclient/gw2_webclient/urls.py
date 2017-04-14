@@ -21,6 +21,8 @@ from gw2 import views
 urlpatterns = [
     url(r'^$', views.homepage, name='homepage'),
     url(r'^dailies/$', views.getDailyAchievement, name='dailies'),
+    url(r'^events/$', views.getWorldBosses, name='events'),
+    url(r'^bank/$', views.getBank, name='bank'),
     url(r'^characters/$', views.getCharacterList, name='characters'),
     url(r'^characters/info/$', views.getCharacterInfo, name='characterinfo'),
     url(r'^characters/inventory/$', views.getInventory, name='inventory'),
