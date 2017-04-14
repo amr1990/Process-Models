@@ -126,6 +126,7 @@ def getInventory(request):
 
     return render_to_response('inventory.html',{'inventory': return_response_inventory, 'name':charname},context)
 
+
 def getDailyAchievement(request):
     context = RequestContext(request)
     token = "?id="
@@ -151,6 +152,7 @@ def getDailyAchievement(request):
         'daily.html',
         {'achievements': return_response},
         context)
+
 
 @login_required
 def getCharacterList(request):
