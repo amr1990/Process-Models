@@ -1,0 +1,10 @@
+{% extends "base.html" %}
+{% block content %}
+<meta charset="UTF-8">
+<h1>BANK FOR ACCOUNT</h1>
+    {% for item, count in bank %}
+        <br><strong>Item</strong>: {{item}}</br>
+        <br><strong>Quantity</strong>: {{count}}</br>
+        <br></br>
+    {% endfor %}
+{% endblock %}
