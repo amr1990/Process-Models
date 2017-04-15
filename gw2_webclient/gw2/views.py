@@ -1,5 +1,7 @@
 # encoding=utf8
 import json
+import string
+
 import bs4
 import urllib2
 import requests
@@ -181,7 +183,7 @@ def getCharacterInfo(request):
                 res = data_titles["name"]
             else:
                 res = unicode(data_charinfo[item])
-            char_info.append([item, res])
+            char_info.append([string.capwords(item), res])
 
     return render_to_response(
         'infochar.html',
