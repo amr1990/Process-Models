@@ -37,5 +37,8 @@ urlpatterns = [
     url(r'^accounts/login/$', login, name='login'),
     url(r'^accounts/logout/$', logout, name='logout'),
     url(r'^registration/register/$', views.register, name='register'),
+    url(r'^pvp/$', views.pvp, name='pvp'),
+    url(r'^pvp/stats/$', views.getPvPStats, name='pvp_stats'),
+    url(r'^pvp/games/$', views.getPvPGames, name='pvp_games'),
     url(r'^admin/', admin.site.urls),
 ]
