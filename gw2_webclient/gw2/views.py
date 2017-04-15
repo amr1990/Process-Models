@@ -37,6 +37,7 @@ url_services = {
     "history": "history/",
     "buys": "buys/",
     "sells": "sells/",
+    "itemstats": "itemstats/",
 }
 
 
@@ -201,33 +202,34 @@ def getGear(request):
         profile = UserProfile.objects.filter(user=user).get()
         api = profile.apikey
 
-    url = URL + url_services["character"] + charname + url_services[
-        "equipment"] + url_services["token"] + api
+    url = URL + url_services["character"] + charname + url_services["equipment"] + url_services["token"] + api
     req_gear = requests.get(url)
     data_gear = json.loads(req_gear.text)
     return_response_gear = []
+    return_response_inventory = []
 
-    for gear in data_gear["equipment"]:
+    for item in data_gear["equipment"]:
+        url_items = URL + url_services["items"] + str(item["id"])
+        req_items = requests.get(url_items)
+        data_items = json.loads(req_items.text)
+        itemname = data_items["name"]
+        itemtype = data_items["type"]
+        itemdetails = data_items["details"]
+        stat_data = []
+        if "infix_upgrade" in itemdetails.keys():
+            stats = itemdetails["infix_upgrade"]
+            for stat in stats["attributes"]:
+                stat_data.append((stat["attribute"], stat["modifier"]))
+        if "stat_choices" in itemdetails.keys():
+            stats = itemdetails["stat_choices"]
+            for stat in stats:
+                url_stat = URL + url_services["itemstats"] + str(stat)
+                req_stat = requests.get(url_stat)
+                data_stat = json.loads(req_stat.text)
+                stat_data.append(("Stat Choice", data_stat["name"]))
+        return_response_gear.append((itemname, itemtype, stat_data))
 
-        if gear["id"]:
-            url_items = URL + url_services["items"] + str(gear["id"])
-            req_items = requests.get(url_items)
-            data_items = json.loads(req_items.text)
-            itemname = data_items["name"]
-            itemtype = data_items["type"]
-
-            return_response_gear.append((itemname, itemtype, data_items["details"]))
-
-        '''for item in gear:
-            if item:
-                url_items = URL + url_services["items"] + str(item["id"])
-                req_items = requests.get(url_items)
-                data_items = json.loads(req_items.text)
-                itemname = data_items["name"]
-                return_response_inventory.append((itemname, item["count"]))
-'''
-    return render_to_response('gear.html', {'gear': return_response_gear}, context)
-
+    return render_to_response('gear.html', {'stats': return_response_gear, 'name': charname}, context)
 
 @login_required
 def getBank(request):
