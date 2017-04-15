@@ -1,9 +1,16 @@
 {% extends "base.html" %}
 {% block content %}
-<h1>Daily Achievements</h1>
+<h1>Daily Objectives</h1>
+<table border="1">
+    <tr>
+        <td><strong>Daily name</strong></td>
+        <td><strong>Description</strong></td>
+    </tr>
     {% for name, description in achievements %}
-        <br><strong>Daily name</strong>: {{name}}</br>
-        <br><strong>Description</strong>: {{description}}</br>
-        <br></br>
+        <tr>
+            <td>{{name}}</td>
+            <td>{{description}}</td>
+        </tr>
     {% endfor %}
+</table>
 {% endblock %}
