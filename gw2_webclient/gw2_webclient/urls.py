@@ -20,6 +20,7 @@ from gw2 import views
 
 urlpatterns = [
     url(r'^$', views.homepage, name='homepage'),
+    url(r'^accounts/profile/$', views.homepage, name='homepage'),
     url(r'^dailies/$', views.getDailyAchievement, name='dailies'),
     url(r'^professions/$', views.getInfoProfession, name='professions'),
     url(r'^professions/(?P<prof_id>.*)/training/$', views.getTraining, name='training'),
