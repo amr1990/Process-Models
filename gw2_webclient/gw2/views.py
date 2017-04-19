@@ -38,6 +38,12 @@ url_services = {
     "buys": "buys/",
     "sells": "sells/",
     "itemstats": "itemstats/",
+    "pvp": "pvp/",
+    "stats": "stats",
+    "standings": "standings",
+    "seasons": "seasons/",
+    "games": "games",
+    "maps": "maps/"
 }
 
 
@@ -491,8 +497,7 @@ def getPvPStats(request):
         profile = UserProfile.objects.filter(user=user).get()
         api = profile.apikey
 
-    URL_pvpstats = URL + url_services["pvp"] + url_services["stats"] \
-                      + url_services["token"] + api
+    URL_pvpstats = URL + url_services["pvp"] + url_services["stats"] + url_services["token"] + api
     req_pvpstats = requests.get(URL_pvpstats)
     data_pvpstats = json.loads(req_pvpstats.text)
     URL_standings = URL + url_services["pvp"] + url_services["standings"] \
